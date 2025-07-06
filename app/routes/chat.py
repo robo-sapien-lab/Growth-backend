@@ -7,7 +7,7 @@ from app.database import get_db
 
 router = APIRouter()
 
-@router.post("/chat/send")
+@router.post("/send")
 def send_message(sender_id: int, receiver_id: int, content: str, db: Session = Depends(get_db)):
     sender = db.query(User).filter(User.id == sender_id).first()
     receiver = db.query(User).filter(User.id == receiver_id).first()
@@ -31,7 +31,7 @@ def send_message(sender_id: int, receiver_id: int, content: str, db: Session = D
 
     return {"message": "Message sent", "id": message.id}
 
-@router.get("/chat/history/{user1_id}/{user2_id}")
+@router.get("/history/{user1_id}/{user2_id}")
 def get_chat_history(user1_id: int, user2_id: int, db: Session = Depends(get_db)):
     messages = db.query(DirectMessage).filter(
         ((DirectMessage.sender_id == user1_id) & (DirectMessage.receiver_id == user2_id)) |

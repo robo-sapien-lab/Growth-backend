@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.user import School
 
-router = APIRouter(prefix="/school", tags=["School"])
+router = APIRouter(tags=["School"])
 
 @router.post("/create")
 def create_school(data: dict):

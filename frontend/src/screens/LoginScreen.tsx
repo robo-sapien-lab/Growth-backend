@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import AuthContext from '../context/AuthContext';
 
 export default function LoginScreen({ navigation }: any) {
@@ -8,8 +8,12 @@ export default function LoginScreen({ navigation }: any) {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    await login(email, password);
-    navigation.replace('Feed');
+    const ok = await login(email, password);
+    if (ok) {
+      navigation.reset({ index: 0, routes: [{ name: 'Feed' }] });
+    } else {
+      Alert.alert('Login failed', 'Invalid email or password');
+    }
   };
 
   return (

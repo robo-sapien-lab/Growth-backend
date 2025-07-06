@@ -9,7 +9,7 @@ export default function LoginScreen({ navigation }: any) {
 
   const handleLogin = async () => {
     await login(email, password);
-    navigation.replace('Feed');
+    navigation.replace('Main');
   };
 
   return (

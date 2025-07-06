@@ -4,3 +4,4 @@ __pycache__/
 .env
 dev.db
 uploads/
+frontend/node_modules/

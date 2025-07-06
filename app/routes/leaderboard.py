@@ -11,7 +11,7 @@ from app.models.story import Story
 router = APIRouter()
 
 
-@router.get("/leaderboard/{school_id}")
+@router.get("/{school_id}")
 def get_full_leaderboard(school_id: int, db: Session = Depends(get_db)):
     try:
         users = db.query(User).filter(User.school_id == school_id).all()

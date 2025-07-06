@@ -1,11 +1,15 @@
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import jwtDecode from 'jwt-decode';
+import { login as loginApi, signup as signupApi } from '../api/auth';
 
 interface AuthContextProps {
   token: string | null;
   userId: number | null;
-  login: (email: string, password: string) => Promise<void>;
+  /**
+   * Logs the user in and resolves to true on success.
+   */
+  login: (email: string, password: string) => Promise<boolean>;
   signup: (data: SignupData) => Promise<void>;
   logout: () => void;
 }
@@ -21,7 +25,7 @@ interface SignupData {
 const AuthContext = createContext<AuthContextProps>({
   token: null,
   userId: null,
-  login: async () => {},
+  login: async () => false,
   signup: async () => {},
   logout: () => {},
 });
@@ -42,25 +46,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loadToken();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const res = await fetch('http://localhost:8000/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    setToken(data.access_token);
-    await SecureStore.setItemAsync('token', data.access_token);
-    const decoded: any = jwtDecode(data.access_token);
-    setUserId(decoded.user_id);
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const tokenVal = await loginApi(email, password);
+      await SecureStore.setItemAsync('token', tokenVal);
+      setToken(tokenVal);
+      const decoded: any = jwtDecode(tokenVal);
+      setUserId(decoded.user_id);
+      return true;
+    } catch (e) {
+      return false;
+    }
   };
 
   const signup = async (data: SignupData) => {
-    await fetch('http://localhost:8000/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+    await signupApi(data);
   };
 
   const logout = async () => {
